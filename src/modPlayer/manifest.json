@@ -1,0 +1,48 @@
+{
+  "$schema": "https://moonlight-mod.github.io/manifest.schema.json",
+  "id": "modPlayer",
+  "version": "1.0.0",
+  "apiLevel": 2,
+  "cors": ["https://cdn.discordapp.com/"],
+  "meta": {
+    "name": "MOD Player",
+    "tagline": "Allows playing MOD, XM, IT, and other music tracker module file types inside Discord",
+    "description": "Powered by [libopenmpt](https://lib.openmpt.org/libopenmpt/) and [chiptune3.js](https://github.com/DrSnuggles/chiptune).",
+    "authors": ["esm."],
+    "source": "https://github.com/TheEssem/my-moonlight-extensions"
+  },
+  "settings": {
+    "interpolation": {
+      "displayName": "Interpolation",
+      "description": "The interpolation filter used during playback",
+      "type": "select",
+      "options": [{
+        "value": "0",
+        "label": "Default"
+      }, {
+        "value": "1",
+        "label": "Disabled"
+      }, {
+        "value": "2",
+        "label": "Linear"
+      }, {
+        "value": "4",
+        "label": "Cubic"
+      }, {
+        "value": "8",
+        "label": "Sinc"
+      }],
+      "default": "0",
+      "advice": "reload"
+    },
+    "stereo": {
+      "displayName": "Stereo separation",
+      "description": "The amount of stereo separation",
+      "type": "number",
+      "min": 0,
+      "max": 200,
+      "default": 100,
+      "advice": "reload"
+    }
+  }
+}
