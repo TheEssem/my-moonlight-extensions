@@ -45,7 +45,7 @@ const logger = moonlight.getLogger("modPlayer/chiptune3");
 export class ChiptuneJsPlayer {
   config: Config;
   loaded: boolean;
-  context: AudioContext;
+  context: AudioContext | null;
   gain: GainNode;
   processNode: AudioWorkletNode | undefined;
   destination: AudioDestinationNode | null;
@@ -64,7 +64,6 @@ export class ChiptuneJsPlayer {
 
     if (this.config.context) {
       if (!this.config.context.destination) {
-        //console.error('This is not an audio context.')
         throw "ChiptuneJsPlayer: This is not an audio context";
       }
       this.context = this.config.context;
@@ -85,6 +84,7 @@ export class ChiptuneJsPlayer {
     this.context.audioWorklet
       .addModule(worklet)
       .then(() => {
+        if (!this.context) return;
         this.processNode = new AudioWorkletNode(this.context, "libopenmpt-processor", {
           numberOfInputs: 0,
           numberOfOutputs: 1,
@@ -177,6 +177,18 @@ export class ChiptuneJsPlayer {
   }
   stop() {
     this.postMsg("stop");
+  }
+  cleanup() {
+    this.postMsg("cleanup");
+    this.context?.close();
+    this.context = null;
+    this.gain.disconnect();
+    if (this.processNode) {
+      this.processNode.disconnect();
+      this.processNode.port.onmessage = null;
+      this.processNode.port.close();
+    }
+    this.handlers = [];
   }
   pause() {
     this.postMsg("pause");

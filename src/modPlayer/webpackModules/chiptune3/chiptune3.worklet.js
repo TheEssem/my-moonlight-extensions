@@ -47,21 +47,18 @@ class MPT extends AudioWorkletProcessor {
     super();
     this.port.onmessage = this.handleMessage_.bind(this);
     this.paused = false;
+    this.cleanup = false;
     this.config = {
       repeatCount: -1, // -1 = play endless, 0 = play once, do not repeat
       stereoSeparation: 100, // percents
       interpolationFilter: 0 // https://lib.openmpt.org/doc/group__openmpt__module__render__param.html
     };
     this.channels = 0;
-    //this.num = 0;
   }
 
   process(inputList, outputList, parameters) {
+    if (this.cleanup) return false;
     if (!this.modulePtr || !this.leftPtr || !this.rightPtr || this.paused) return true; //silence
-    /*if (this.num < 257) {
-      this.num++;
-      return true;
-    }*/
 
     const left = outputList[0][0];
     const right = outputList[0][1];
@@ -133,6 +130,13 @@ class MPT extends AudioWorkletProcessor {
         break;
       case "togglePause":
         this.paused = !this.paused;
+        break;
+      case "cleanup":
+        this.cleanup = true;
+        this.stop();
+        this.port.onmessage = null;
+        this.port.close();
+        libopenmpt = null;
         break;
       case "stop":
         this.stop();
@@ -256,7 +260,6 @@ class MPT extends AudioWorkletProcessor {
       this.rightBufferPtr = 0;
     }
     this.channels = 0;
-    //this.num = 0;
   }
   meta() {
     this.port.postMessage({ cmd: "meta", meta: this.getMeta() });
@@ -352,9 +355,9 @@ class MPT extends AudioWorkletProcessor {
       data[keys[i]] = libopenmpt.UTF8ToString(libopenmpt._openmpt_module_get_metadata(this.modulePtr, keyNameBuffer));
       libopenmpt._free(keyNameBuffer);
     }
-    data.song = this.getSong();
-    data.totalOrders = data.song.orders.length; // libopenmpt._openmpt_module_get_num_orders(this.modulePtr)
-    data.totalPatterns = data.song.patterns.length; // libopenmpt._openmpt_module_get_num_patterns(this.modulePtr)
+    //data.song = this.getSong();
+    //data.totalOrders = data.song.orders.length; // libopenmpt._openmpt_module_get_num_orders(this.modulePtr)
+    //data.totalPatterns = data.song.patterns.length; // libopenmpt._openmpt_module_get_num_patterns(this.modulePtr)
     data.songs = this.getSongs();
     data.libopenmptVersion = libopenmpt.version;
     data.libopenmptBuild = libopenmpt.build;

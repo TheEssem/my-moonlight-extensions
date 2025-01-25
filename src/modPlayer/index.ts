@@ -6,8 +6,8 @@ export const patches: ExtensionWebExports["patches"] = [
   {
     find: '"MosaicItemHoverButtons"',
     replace: {
-      match: /switch\((\i)\){case"IMAGE":return\(0,(\i)\.jsx\)/,
-      replacement: (orig, type, ReactJSX) => `
+      match: /switch\((\i)\){case"IMAGE":return\(0,\i\.jsx\)/,
+      replacement: (orig, type) => `
       if (require("modPlayer_misc").formats.includes(arguments[0].item.originalItem.filename.toLowerCase().split(".").at(-1))) ${type} = "AUDIO";
       ${orig}`
     }

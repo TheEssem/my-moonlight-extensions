@@ -6,7 +6,7 @@ export default class FakeAudio {
   url: string;
   isMuted: boolean;
   ended: boolean;
-  endHandler: (e: Event) => void;
+  endHandler: ((e: Event) => void) | null;
   constructor(element: any) {
     this.player = null;
     this.volumeLevel = 1;
@@ -26,7 +26,9 @@ export default class FakeAudio {
   }
 
   destroy() {
-    this.player?.stop();
+    this.player?.cleanup();
+    this.endHandler = null;
+    this.player = null;
   }
 
   get duration() {
@@ -57,7 +59,7 @@ export default class FakeAudio {
         this.player?.onEnded(() => {
           this.player?.pause();
           this.ended = true;
-          this.endHandler(new Event("ended"));
+          this.endHandler?.(new Event("ended"));
         });
         this.play();
       });
