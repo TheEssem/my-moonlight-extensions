@@ -1,7 +1,7 @@
 {
   "$schema": "https://moonlight-mod.github.io/manifest.schema.json",
   "id": "modPlayer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "apiLevel": 2,
   "cors": ["https://cdn.discordapp.com/"],
   "meta": {
@@ -9,7 +9,9 @@
     "tagline": "Allows playing MOD, XM, IT, and other music tracker module file types inside Discord",
     "description": "Powered by [libopenmpt](https://lib.openmpt.org/libopenmpt/) and [chiptune3.js](https://github.com/DrSnuggles/chiptune).",
     "authors": ["esm."],
-    "source": "https://github.com/TheEssem/my-moonlight-extensions"
+    "source": "https://github.com/TheEssem/my-moonlight-extensions",
+    "donate": "https://ko-fi.com/TheEssem",
+    "changelog": "Fixed files with capitalized extensions not playing"
   },
   "settings": {
     "interpolation": {

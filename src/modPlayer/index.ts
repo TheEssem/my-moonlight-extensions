@@ -8,7 +8,7 @@ export const patches: ExtensionWebExports["patches"] = [
     replace: {
       match: /switch\((\i)\){case"IMAGE":return\(0,(\i)\.jsx\)/,
       replacement: (orig, type, ReactJSX) => `
-      if (require("modPlayer_misc").formats.includes(arguments[0].item.originalItem.filename.split(".").at(-1))) ${type} = "AUDIO";
+      if (require("modPlayer_misc").formats.includes(arguments[0].item.originalItem.filename.toLowerCase().split(".").at(-1))) ${type} = "AUDIO";
       ${orig}`
     }
   },
@@ -19,12 +19,12 @@ export const patches: ExtensionWebExports["patches"] = [
       {
         match: /(\i===\i\.AUDIO)\?(this\.renderAudio\(\)):/,
         replacement: (_, audioCheck, render) =>
-          `${audioCheck}?(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.split(".").at(-1))?null:${render}):`
+          `${audioCheck}?(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.toLowerCase().split(".").at(-1))?null:${render}):`
       },
       {
         match: /(?<=constructor\(\i\){var.+?)(?<!{)hovering:!1}/,
         replacement: (orig) =>
-          `${orig};if(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.split(".").at(-1)))this.mediaRef.current=new (require("modPlayer_fakeAudio").default)(this);`
+          `${orig};if(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.toLowerCase().split(".").at(-1)))this.mediaRef.current=new (require("modPlayer_fakeAudio").default)(this);`
       },
       {
         match: /componentWillUnmount\(\){.+?if\(null==(\i)\)return;/,
