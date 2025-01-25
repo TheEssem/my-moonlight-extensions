@@ -44,6 +44,7 @@ const logger = moonlight.getLogger("modPlayer/chiptune3");
 
 export class ChiptuneJsPlayer {
   config: Config;
+  loaded: boolean;
   context: AudioContext;
   gain: GainNode;
   processNode: AudioWorkletNode | undefined;
@@ -59,6 +60,7 @@ export class ChiptuneJsPlayer {
 
   constructor(cfg: Config) {
     this.config = { ...defaultCfg, ...cfg };
+    this.loaded = false;
 
     if (this.config.context) {
       if (!this.config.context.destination) {
@@ -170,6 +172,7 @@ export class ChiptuneJsPlayer {
       });
   }
   play(val: ArrayBuffer) {
+    this.loaded = true;
     this.postMsg("play", val);
   }
   stop() {

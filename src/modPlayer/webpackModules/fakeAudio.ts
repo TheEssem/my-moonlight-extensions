@@ -1,32 +1,85 @@
 import type { ChiptuneJsPlayer } from "@moonlight-mod/wp/modPlayer_chiptune3";
 
 export default class FakeAudio {
-  player: ChiptuneJsPlayer;
+  player: ChiptuneJsPlayer | null;
+  volumeLevel: number;
+  url: string;
+  isMuted: boolean;
+  ended: boolean;
+  endHandler: (e: Event) => void;
   constructor(element: any) {
-    this.player = element.props.modPlayer;
-    if (!element.props.audioRegistered[0]) {
-      this.player.onEnded(() => {
-        element.setState({
-          playing: false
-        });
-      });
-      element.props.audioRegistered[1](true);
-    }
+    this.player = null;
+    this.volumeLevel = 1;
+    this.url = element.props.src;
+    this.isMuted = false;
+    this.ended = true;
+    this.endHandler = element.handleEnded;
   }
 
   get currentTime() {
-    return this.player.getCurrentTime();
+    return this.player?.getCurrentTime() ?? 0;
   }
 
   set currentTime(val: number | undefined) {
     if (val == null) return;
-    this.player.seek(val);
+    this.player?.setPos(val);
+  }
+
+  destroy() {
+    this.player?.stop();
   }
 
   get duration() {
-    return this.player.duration;
+    return this.player?.duration ?? NaN;
   }
 
-  play() {}
-  pause() {}
+  get muted() {
+    return this.isMuted;
+  }
+
+  set muted(val: boolean) {
+    this.player?.setVol(val ? 0 : this.volumeLevel);
+    this.isMuted = val;
+  }
+
+  pause() {
+    this.player?.pause();
+  }
+
+  play() {
+    if (!this.player) {
+      this.player = new (require("@moonlight-mod/wp/modPlayer_chiptune3").ChiptuneJsPlayer)({
+        interpolationFilter: moonlight.getConfigOption<number>("modPlayer", "interpolation"),
+        stereoSeparation: moonlight.getConfigOption<number>("modPlayer", "stereo")
+      });
+      this.player?.onInitialized(() => {
+        this.player?.setVol(this.isMuted ? 0 : this.volumeLevel);
+        this.player?.onEnded(() => {
+          this.player?.pause();
+          this.ended = true;
+          this.endHandler(new Event("ended"));
+        });
+        this.play();
+      });
+      return;
+    }
+    if (this.ended) {
+      if (!this.player.loaded) {
+        this.player.load(this.url);
+      } else {
+        this.player.setPos(0);
+      }
+      this.ended = false;
+    }
+    this.player.unpause();
+  }
+
+  get volume() {
+    return this.volumeLevel;
+  }
+
+  set volume(level: number) {
+    if (level != null) this.player?.setVol(level);
+    this.volumeLevel = level;
+  }
 }
