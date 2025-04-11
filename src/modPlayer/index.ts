@@ -4,7 +4,7 @@ import type { ExtensionWebExports } from "@moonlight-mod/types";
 export const patches: ExtensionWebExports["patches"] = [
   // Render file as audio
   {
-    find: '"MosaicItemHoverButtons"',
+    find: ".spoilerRemoveMosaicItemButton:",
     replace: {
       match: /switch\((\i)\){case"IMAGE":return\(0,\i\.jsx\)/,
       replacement: (orig, type) => `
