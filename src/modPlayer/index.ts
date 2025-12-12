@@ -22,7 +22,7 @@ export const patches: ExtensionWebExports["patches"] = [
           `${audioCheck}?(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.toLowerCase().split(".").at(-1))?null:${render}):`
       },
       {
-        match: /(?<=constructor\(\i\){var.+?)(?<!{)hovering:!1}/,
+        match: /(?<=constructor\(\i\){var.+?)(?<!{)videoStats:null}/,
         replacement: (orig) =>
           `${orig};if(this.props.fileName && require("modPlayer_misc").formats.includes(this.props.fileName.toLowerCase().split(".").at(-1)))this.mediaRef.current=new (require("modPlayer_fakeAudio").default)(this);`
       },
